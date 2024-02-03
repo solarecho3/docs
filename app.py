@@ -152,17 +152,19 @@ if st_file_uploader_submit:
 
 
 df_dir_map = pd.read_json(DATA_PATH_ROOT + '/map.json').T
-st.dataframe(df_dir_map, use_container_width=True)
+# st.dataframe(df_dir_map, use_container_width=True)
 
 ##### show thumbnails #####
 st.caption('Thumbnails')
 
-for i in df_dir_map['thumbnail']:
-    with open(i) as f:
+for i in df_dir_map.iterrows():
+    with open(i[1]['thumbnail']) as f:
         with st.container(border=True):
             thumb_col1, thumb_col2 = st.columns([5,2])
             with thumb_col1:
-                st.write(i)
+                st.markdown(f"👤 :green[{i[1]['original_filename']}]")
+                st.markdown(f"📆 :violet[{i[1]['upload_time']}]")
+                st.markdown(f"🏷️ :rainbow[{', '.join(i[1]['tags'].split())}]")
+                st.markdown(f"🗃️ :blue[{i[1]['full_path']}]")
             with thumb_col2:
-                st.image(Image.open(i), width=128, use_column_width="never")
-
+                st.image(Image.open(i[1]['thumbnail']), width=128, use_column_width="never")
