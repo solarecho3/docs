@@ -1,10 +1,13 @@
+import io
 import os
 import uuid
 import json
 import pathlib
 import tomllib
 
+from PIL import Image
 from typing import Any
+from datetime import datetime
 
 import pandas as pd
 import streamlit as st
@@ -31,6 +34,23 @@ data_path_root = "data"
         with open("config.toml", "r") as f:
             data = tomllib.loads(f.read())
     return data
+
+
+def generate_thumbnail(root, thumb_root: str, data: bytes) -> str:
+    """Generate thumbnails.
+
+    :returns: thumbnail uuid + \".jpg\""""
+    os.makedirs(os.path.join(root, thumb_root), exist_ok=True)
+    size = (128, 128)
+    thumb_uuid = str(uuid.uuid4())
+    with Image.open(io.BytesIO(data)) as f:
+        f.thumbnail(size)
+        f.save(os.path.join(root, thumb_root, thumb_uuid + ".jpg"), "JPEG")
+    return str(os.path.join(root, thumb_root, thumb_uuid)) + ".jpg"
+
+
+def show_thumbnails():
+    pass
 
 
 def generate_hextree(root: str):
@@ -66,7 +86,7 @@ def map_hextree(root: str, map_path: str):
         pass
 
 
-def jpg_to_hextree(root, data, metadata):
+def jpg_to_hextree(root: str, data: bytes, metadata: dict):
     """Save an image to hex tree directory."""
     new_uid = uuid.uuid4()
     _file = str(new_uid) + ".jpg"
@@ -77,9 +97,10 @@ def jpg_to_hextree(root, data, metadata):
     _third = _file[2]
     file_path = pathlib.Path(root, _first, _second, _third, _file)
     metadata["full_path"] = str(file_path)
-    from datetime import datetime
     metadata["upload_time"] = datetime.isoformat(datetime.utcnow())
     metadata["upload_time_zone"] = "utc"
+    metadata["thumbnail"] = generate_thumbnail(root, 'previews', data)
+
     with open(file_path, "wb") as img:
         img.write(data)
 
@@ -129,5 +150,19 @@ if st_file_uploader_submit:
     )
     jpg_to_hextree(DATA_PATH_ROOT, bytes_data, attach_metadata)
 
+
+df_dir_map = pd.read_json(DATA_PATH_ROOT + '/map.json').T
 st.subheader('Files in tree')
-st.dataframe(pd.read_json(DATA_PATH_ROOT + '/map.json').T)
+
+st.dataframe(df_dir_map, use_container_width=True)
+
+##### show thumbnails #####
+st.caption('Thumbnails')
+thumb_col1, thumb_col2 = st.columns(2)
+for i in df_dir_map['thumbnail']:
+    with open(i) as f:
+        with thumb_col1:
+            st.write(i)
+        with thumb_col2:
+            st.image(Image.open(i), use_column_width=True)
+
