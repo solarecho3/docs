@@ -1,0 +1,8 @@
+app-name = "HomeDocs"
+app-version = "1.0"
+config-version = "0.1"
+
+[app]
+page_title = "OurDocs"
+page_icon = ":shark:"
+layout = "centered"
