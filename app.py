@@ -11,6 +11,7 @@ from datetime import datetime
 
 import pandas as pd
 import streamlit as st
+import streamlit.components.v1 as components
 
 
 def configs() -> dict[str, Any]:
@@ -49,8 +50,34 @@ def generate_thumbnail(root, thumb_root: str, data: bytes) -> str:
     return str(os.path.join(root, thumb_root, thumb_uuid)) + ".jpg"
 
 
-def show_thumbnails():
-    pass
+def show_thumbnails(root):
+    df_dir_map = pd.read_json(root + '/map.json').T
+    st.dataframe(df_dir_map, use_container_width=True)
+
+    ##### show thumbnails #####
+    st.caption('Thumbnails')
+    for i in df_dir_map.iterrows():
+        with open(i[1]['thumbnail']) as f:
+            with st.container(border=True):
+                thumb_col1, thumb_col2, thumb_col3 = st.columns([5, 2, 1])
+                with thumb_col1:
+                    st.markdown(f"👤 :green[**{i[1]['original_filename']}**]")
+                    st.markdown(f"")
+                    st.markdown(f"📆 :violet[*{i[1]['upload_time']}*]")
+                    st.markdown(f"🏷️ :violet[{', '.join(i[1]['tags'].split())}]")
+                    st.markdown(f"🗃️ :blue[{i[1]['full_path']}]")
+                with thumb_col2:
+                    st.image(Image.open(i[1]["thumbnail"]), width=128, use_column_width="never")
+                with thumb_col3:
+                    with open(i[1]["full_path"], "rb") as file:
+                        st.download_button(
+                            label="save",
+                            data=file,
+                            file_name=i[1]["original_filename"].split("/")[-1],
+                            mime=f"image/{i[1]['full_path'].split('/')[-1]}.split('.')[-1]",
+                            key=uuid.uuid4()
+                        )
+                    st.button("delete", key=uuid.uuid4())
 
 
 def generate_hextree(root: str):
@@ -136,6 +163,7 @@ if not os.path.exists(DATA_PATH_ROOT):
 
 st.header('Docs uploader')
 st.subheader('Upload')
+upload_col1, upload_col2 = st.columns([5,2])
 st_file_uploader = st.file_uploader('New image', type='jpg', accept_multiple_files=False)
 st_file_uploader_description = st.text_input('Tags', placeholder='\"2023 1099 tax form\"...')
 st_file_uploader_submit = st.button('Upload')
@@ -151,20 +179,8 @@ if st_file_uploader_submit:
     jpg_to_hextree(DATA_PATH_ROOT, bytes_data, attach_metadata)
 
 
-df_dir_map = pd.read_json(DATA_PATH_ROOT + '/map.json').T
-# st.dataframe(df_dir_map, use_container_width=True)
-
-##### show thumbnails #####
-st.caption('Thumbnails')
-
-for i in df_dir_map.iterrows():
-    with open(i[1]['thumbnail']) as f:
-        with st.container(border=True):
-            thumb_col1, thumb_col2 = st.columns([5,2])
-            with thumb_col1:
-                st.markdown(f"👤 :green[{i[1]['original_filename']}]")
-                st.markdown(f"📆 :violet[{i[1]['upload_time']}]")
-                st.markdown(f"🏷️ :rainbow[{', '.join(i[1]['tags'].split())}]")
-                st.markdown(f"🗃️ :blue[{i[1]['full_path']}]")
-            with thumb_col2:
-                st.image(Image.open(i[1]['thumbnail']), width=128, use_column_width="never")
+##### metadata and display #####
+try:
+    show_thumbnails(DATA_PATH_ROOT)
+except FileNotFoundError:
+    pass
