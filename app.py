@@ -171,6 +171,9 @@ def jpg_to_hextree(root: str, data: bytes, metadata: dict):
     ocr_str = pytesseract.image_to_string(Image.open(str(file_path)))
     metadata["ocr_string"] = ocr_str
 
+    # add t5 inference here
+    # attach summary to metadata
+
     # create new empty database mapping if not exist
     map_root = str(pathlib.Path(root, 'map.json'))
     if not os.path.exists(map_root):
