@@ -9,13 +9,14 @@ from PIL import Image
 from typing import Any
 from datetime import datetime
 
+import cv2
 import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
 
 
 def configs() -> dict[str, Any]:
-    """Load configs from local."""
+    """Load configs from local or make new."""
 
     default_toml_str = """app-name = "HomeDocs"
 app-version = "1.0"
@@ -50,6 +51,31 @@ def generate_thumbnail(root, thumb_root: str, data: bytes) -> str:
     return str(os.path.join(root, thumb_root, thumb_uuid)) + ".jpg"
 
 
+def generate_thumbcard(original_filename, upload_time, tags, full_path, thumbnail, file_data):
+    cmd_list_left = [
+        st.markdown(f"👤 :green[**{original_filename}**]"),
+        st.markdown(f""),
+        st.markdown(f"📆 :violet[*{upload_time}*]"),
+        st.markdown(f"🏷️ :violet[{', '.join(tags.split())}]"),
+        st.markdown(f"🗃️ :blue[{full_path}]"),
+        st.markdown(':rainbow[OCR Text]')
+    ]
+    cmd_list_middle = [
+        st.image(Image.open(thumbnail), width=128, use_column_width="never"),
+    ]
+    cmd_list_right = [
+        st.download_button(
+                label="save",
+                data=file_data,
+                file_name=original_filename.split("/")[-1],
+                mime=f"image/{full_path.split('/')[-1]}.split('.')[-1]",
+                key=uuid.uuid4()
+            ),
+        st.button("delete", key=uuid.uuid4())
+    ]
+    return cmd_list_left, cmd_list_middle, cmd_list_right
+
+
 def show_thumbnails(root):
     df_dir_map = pd.read_json(root + '/map.json').T
     st.dataframe(df_dir_map, use_container_width=True)
@@ -61,11 +87,15 @@ def show_thumbnails(root):
             with st.container(border=True):
                 thumb_col1, thumb_col2, thumb_col3 = st.columns([5, 2, 1])
                 with thumb_col1:
-                    st.markdown(f"👤 :green[**{i[1]['original_filename']}**]")
-                    st.markdown(f"")
-                    st.markdown(f"📆 :violet[*{i[1]['upload_time']}*]")
-                    st.markdown(f"🏷️ :violet[{', '.join(i[1]['tags'].split())}]")
-                    st.markdown(f"🗃️ :blue[{i[1]['full_path']}]")
+                    st.markdown(':rainbow[T5 Summary]')
+                    st.markdown(f"Original Filename: :green[**{i[1]['original_filename']}**]")
+                    st.markdown(f"Upload DTG: :violet[*{i[1]['upload_time']}*]")
+                    st.markdown(f"Manual Tags: :violet[{', '.join(i[1]['tags'].split())}]")
+                    st.markdown(f"Path: :blue[{i[1]['full_path']}]")
+                    try:
+                        st.markdown(f":rainbow[{i[1]['ocr_string']}]")
+                    except KeyError:
+                        pass
                 with thumb_col2:
                     st.image(Image.open(i[1]["thumbnail"]), width=128, use_column_width="never")
                 with thumb_col3:
@@ -131,13 +161,23 @@ def jpg_to_hextree(root: str, data: bytes, metadata: dict):
     with open(file_path, "wb") as img:
         img.write(data)
 
-    # create new empty
+    # grayscale the image
+    img = cv2.imread(str(file_path))
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    cv2.imwrite(str(file_path), img)
+
+    # generate OCR with tesseract
+    import pytesseract
+    ocr_str = pytesseract.image_to_string(Image.open(str(file_path)))
+    metadata["ocr_string"] = ocr_str
+
+    # create new empty database mapping if not exist
     map_root = str(pathlib.Path(root, 'map.json'))
     if not os.path.exists(map_root):
         with open(map_root, "w") as f:
             json.dump({}, f)
 
-    # read
+    # read in database mapping
     with open(map_root, "r") as map_file:
         map_data = json.load(map_file)
 
@@ -169,6 +209,7 @@ st_file_uploader_description = st.text_input('Tags', placeholder='\"2023 1099 ta
 st_file_uploader_submit = st.button('Upload')
 st.divider()
 
+# upload an image to the database
 if st_file_uploader_submit:
     bytes_data = st_file_uploader.getvalue()
 
