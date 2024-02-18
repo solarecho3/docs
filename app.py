@@ -12,7 +12,6 @@ from datetime import datetime
 import cv2
 import pandas as pd
 import streamlit as st
-import streamlit.components.v1 as components
 
 
 def configs() -> dict[str, Any]:
@@ -87,15 +86,15 @@ def show_thumbnails(root):
             with st.container(border=True):
                 thumb_col1, thumb_col2, thumb_col3 = st.columns([5, 2, 1])
                 with thumb_col1:
-                    st.markdown(':rainbow[T5 Summary]')
+                    try:
+                        st.markdown(f":rainbow[{i[1]['t5_summary']}]")
+                        st.text_area('OCR', value=i[1]['ocr_string'], key=uuid.uuid4())
+                    except (KeyError, AttributeError):
+                        pass
                     st.markdown(f"Original Filename: :green[**{i[1]['original_filename']}**]")
                     st.markdown(f"Upload DTG: :violet[*{i[1]['upload_time']}*]")
                     st.markdown(f"Manual Tags: :violet[{', '.join(i[1]['tags'].split())}]")
                     st.markdown(f"Path: :blue[{i[1]['full_path']}]")
-                    try:
-                        st.markdown(f":rainbow[{i[1]['ocr_string']}]")
-                    except KeyError:
-                        pass
                 with thumb_col2:
                     st.image(Image.open(i[1]["thumbnail"]), width=128, use_column_width="never")
                 with thumb_col3:
@@ -172,7 +171,9 @@ def jpg_to_hextree(root: str, data: bytes, metadata: dict):
     metadata["ocr_string"] = ocr_str
 
     # add t5 inference here
+    import modules.t5 as t5
     # attach summary to metadata
+    metadata["t5_summary"] = t5.summarize(ocr_str)
 
     # create new empty database mapping if not exist
     map_root = str(pathlib.Path(root, 'map.json'))
