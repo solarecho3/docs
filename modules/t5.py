@@ -1,3 +1,5 @@
+# stolen shamelessly from https://github.com/ml-explore/mlx-examples/blob/main/t5/t5.py
+
 from time import perf_counter_ns
 from typing import List, Optional, Tuple
 

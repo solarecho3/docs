@@ -1,3 +1,5 @@
+# stolen shamelessly from https://github.com/ml-explore/mlx-examples/blob/main/t5/t5.py
+
 import numpy as np
 from transformers import T5ForConditionalGeneration
 
@@ -55,21 +57,4 @@ def convert(model_name, dtype):
 
 
 if __name__ == "__main__":
-    import argparse
-
-    parser = argparse.ArgumentParser(description="Convert T5 weights to MLX")
-    parser.add_argument(
-        "--model",
-        type=str,
-        help="Name of the T5 model.",
-        default="t5-small",
-    )
-    parser.add_argument(
-        "--dtype",
-        help="The model data type.",
-        type=str,
-        choices=["float16", "float32"],
-        default="float32",
-    )
-    args = parser.parse_args()
-    convert(args.model, args.dtype)
+    convert("t5-3b", "float32")

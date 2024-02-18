@@ -50,31 +50,6 @@ def generate_thumbnail(root, thumb_root: str, data: bytes) -> str:
     return str(os.path.join(root, thumb_root, thumb_uuid)) + ".jpg"
 
 
-def generate_thumbcard(original_filename, upload_time, tags, full_path, thumbnail, file_data):
-    cmd_list_left = [
-        st.markdown(f"👤 :green[**{original_filename}**]"),
-        st.markdown(f""),
-        st.markdown(f"📆 :violet[*{upload_time}*]"),
-        st.markdown(f"🏷️ :violet[{', '.join(tags.split())}]"),
-        st.markdown(f"🗃️ :blue[{full_path}]"),
-        st.markdown(':rainbow[OCR Text]')
-    ]
-    cmd_list_middle = [
-        st.image(Image.open(thumbnail), width=128, use_column_width="never"),
-    ]
-    cmd_list_right = [
-        st.download_button(
-                label="save",
-                data=file_data,
-                file_name=original_filename.split("/")[-1],
-                mime=f"image/{full_path.split('/')[-1]}.split('.')[-1]",
-                key=uuid.uuid4()
-            ),
-        st.button("delete", key=uuid.uuid4())
-    ]
-    return cmd_list_left, cmd_list_middle, cmd_list_right
-
-
 def show_thumbnails(root):
     df_dir_map = pd.read_json(root + '/map.json').T
     st.dataframe(df_dir_map, use_container_width=True)
@@ -84,7 +59,7 @@ def show_thumbnails(root):
     for i in df_dir_map.iterrows():
         with open(i[1]['thumbnail']) as f:
             with st.container(border=True):
-                thumb_col1, thumb_col2= st.columns([5, 2])
+                thumb_col1, thumb_col2 = st.columns([5, 2])
                 with thumb_col1:
                     st.dataframe(i[1])
                 with thumb_col2:
@@ -104,7 +79,6 @@ def generate_hextree(root: str):
     """Generate a hex tree folder structure.
     :param root:
     """
-    # os.makedirs(pathlib.Path(root), exist_ok=True)
     for i in [hex(x)[2:] for x in range(0, 16)]:
         for j in [hex(x)[2:] for x in range(0, 16)]:
             for k in [hex(x)[2:] for x in range(0, 16)]:
@@ -113,18 +87,22 @@ def generate_hextree(root: str):
 
 def find_all_files(root):
     import glob
-    files = glob.glob('root/**/*.jpg', recursive=True)
+    files = glob.glob(f'{root}/**/*.jpg', recursive=True)
     return files
 
 
 def query_hextree(filename: str):
     """Query the data hex tree directory."""
+    # TODO: Store the set of all OCR'd words
+    # in a trie. The leaf node will map to
+    # the index of each document that contain
+    # the word.
+
     pass
 
 
 def map_hextree(root: str, map_path: str):
     """Map the data hex tree."""
-
     # TODO: Save a default map JSON if none exists
     # TODO: The root is the data path root
     # TODO: The map path is from the configs; path to JSON
@@ -169,12 +147,10 @@ def jpg_to_hextree(root: str, data: bytes, metadata: dict):
         stop_words = set(stopwords.words('english'))
         filtered_tokens = [word for word in tokens if word not in stop_words]
         return filtered_tokens
+    # TODO: test removing stop words
 
-    # ocr_str = ocr_str.encode('utf-8').decode('utf-8')
-
-    # add t5 inference here
+    # t5 inference here
     import modules.t5 as t5
-    # attach summary to metadata
     metadata["t5_summary"] = t5.summarize(ocr_str)
 
     # create new empty database mapping if not exist
@@ -224,7 +200,6 @@ if st_file_uploader_submit:
         tags=st_file_uploader_description,
     )
     jpg_to_hextree(DATA_PATH_ROOT, bytes_data, attach_metadata)
-
 
 ##### metadata and display #####
 try:

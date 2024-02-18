@@ -6,6 +6,7 @@ Storage for important documents that can be digitized.
 - 3-level hexidecimal system data directory.
 
 Todo:
+- Trie search
 - Fine-tune t5 model or inference algorithm.
   - Why does terminal results differ from module?
 - Add crop to image pre-processing.

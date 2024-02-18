@@ -1,3 +1,5 @@
+***stolen shamelessly from https://github.com/ml-explore/mlx-examples/blob/main/t5/t5.py***
+
 # T5
 
 The T5 models are encoder-decoder models pre-trained on a mixture of
