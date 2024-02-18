@@ -34,6 +34,7 @@ Because I'm disorganized and all the apps I tried suck.
 - [ ] Installation script.
 - [ ] Trie mapping every OCR'd token to any document containing it.
 - [ ] Text search and document retrieval via trie mapping.
+- [ ] T5 hyperparameteres to config.
 - [ ] Fine-tune the T5 to name the document, less to summarize it.
 - [ ] Move image previews to the hextree too, of course.
 - [ ] Auto-crop for image preprocessing.
