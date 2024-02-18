@@ -398,14 +398,17 @@ def load_model(model_name: str, dtype: str = "float16"):
 
 def summarize(prompt):
     # prompt = prompt.replace('\n',' ')
-    prompt = prompt.replace('  ', ' ')
+    # prompt = prompt.replace('  ', ' ')
     default_model = "t5-3b"
+    import re
+    prompt = re.sub('[^a-zA-Z0-9 \.]', '', prompt)
+    prompt = " ".join([i.title() if i == i.upper() else i for i in prompt.split()])
     prompt = "summarize: " + prompt
     print('prompt:', prompt, '\n')
     max_tokens = 100
-    temp = 0.9
+    temp = 0.5
     dtype = "bfloat16"
-    seed = 0
+    seed = 1
 
     mx.random.seed(seed)
     model, tokenizer = load_model(default_model, dtype)
@@ -419,6 +422,10 @@ def summarize(prompt):
             break
         response = response + tokenizer.decode([token.item()], with_sep=n_tokens > 0)
 
+    # deduplicate response
+    response = response.split(' . ')
+    response = [i.replace(' .', '') for i in response]
+    response = '. '.join(set(response))
     n_tokens += 1
     end = perf_counter_ns()
     elapsed = (end - start) / 1.0e9

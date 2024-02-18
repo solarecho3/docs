@@ -84,20 +84,11 @@ def show_thumbnails(root):
     for i in df_dir_map.iterrows():
         with open(i[1]['thumbnail']) as f:
             with st.container(border=True):
-                thumb_col1, thumb_col2, thumb_col3 = st.columns([5, 2, 1])
+                thumb_col1, thumb_col2= st.columns([5, 2])
                 with thumb_col1:
-                    try:
-                        st.markdown(f":rainbow[{i[1]['t5_summary']}]")
-                        st.text_area('OCR', value=i[1]['ocr_string'], key=uuid.uuid4())
-                    except (KeyError, AttributeError):
-                        pass
-                    st.markdown(f"Original Filename: :green[**{i[1]['original_filename']}**]")
-                    st.markdown(f"Upload DTG: :violet[*{i[1]['upload_time']}*]")
-                    st.markdown(f"Manual Tags: :violet[{', '.join(i[1]['tags'].split())}]")
-                    st.markdown(f"Path: :blue[{i[1]['full_path']}]")
+                    st.dataframe(i[1])
                 with thumb_col2:
                     st.image(Image.open(i[1]["thumbnail"]), width=128, use_column_width="never")
-                with thumb_col3:
                     with open(i[1]["full_path"], "rb") as file:
                         st.download_button(
                             label="save",
@@ -170,6 +161,16 @@ def jpg_to_hextree(root: str, data: bytes, metadata: dict):
     import pytesseract
     ocr_str = pytesseract.image_to_string(Image.open(str(file_path)))
     metadata["ocr_string"] = ocr_str
+
+    # some text cleaning
+    from nltk.corpus import stopwords
+
+    def remove_stopwords(tokens):
+        stop_words = set(stopwords.words('english'))
+        filtered_tokens = [word for word in tokens if word not in stop_words]
+        return filtered_tokens
+
+    # ocr_str = ocr_str.encode('utf-8').decode('utf-8')
 
     # add t5 inference here
     import modules.t5 as t5
