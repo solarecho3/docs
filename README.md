@@ -13,6 +13,14 @@ Store documents by taking a photo, and find them later with simple text search.
 - Tags search.
 - Image preview.
 
+## Installation:
+1. From the `modules` directory, run `python convert.py --model t5-3b` to download the model [~11gb+].
+2. From the `docs` directory, run `python -m venv venv`, `source venv/bin/activate`, `pip install -r requirements.txt`, `streamlit run app.py`.
+
+## Known Bugs:
+- Images must be manually cropped or the OCR gets confused.
+- The t5 is a standard t5-3b from hugging face's transformers library: https://huggingface.co/docs/transformers/en/index, and isn't tuned.
+
 ## Why do this?
 Because I'm disorganized and all the apps I tried suck.
 
@@ -22,6 +30,7 @@ Because I'm disorganized and all the apps I tried suck.
 [x] - Out-of-the-box OCR with tesseract.
 [x] - Out-of-the-box t5 transformer integration.
 [x] - Optimize for t5 inference on Apple silicon so I can host this on my laptop so maybe Ann will use it.
+[ ] - Installation script.
 [ ] - Trie mapping every OCR'd token to any document containing it.
 [ ] - Text search and document retrieval via trie mapping.
 [ ] - Fine-tune the T5 to name the document, less to summarize it.
