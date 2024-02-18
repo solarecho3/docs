@@ -161,6 +161,7 @@ def jpg_to_hextree(root: str, data: bytes, metadata: dict):
         img.write(data)
 
     # grayscale the image
+    # TODO: just do this operation on the bytes
     img = cv2.imread(str(file_path))
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     cv2.imwrite(str(file_path), img)
