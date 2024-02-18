@@ -25,17 +25,17 @@ Store documents by taking a photo, and find them later with simple text search.
 Because I'm disorganized and all the apps I tried suck.
 
 ## Road map to MVP
-[x] - GUI with streamlit.
-[x] - Hex tree directory generation and mapping.
-[x] - Out-of-the-box OCR with tesseract.
-[x] - Out-of-the-box t5 transformer integration.
-[x] - Optimize for t5 inference on Apple silicon so I can host this on my laptop so maybe Ann will use it.
-[ ] - Installation script.
-[ ] - Trie mapping every OCR'd token to any document containing it.
-[ ] - Text search and document retrieval via trie mapping.
-[ ] - Fine-tune the T5 to name the document, less to summarize it.
-[ ] - Move image previews to the hextree too, of course.
-[ ] - Auto-crop for image preprocessing.
+- [x] GUI with streamlit.
+- [x] Hex tree directory generation and mapping.
+- [x] Out-of-the-box OCR with tesseract.
+- [x] Out-of-the-box t5 transformer integration.
+- [x] Optimize for t5 inference on Apple silicon so I can host this on my laptop so maybe Ann will use it.
+- [ ] Installation script.
+- [ ] Trie mapping every OCR'd token to any document containing it.
+- [ ] Text search and document retrieval via trie mapping.
+- [ ] Fine-tune the T5 to name the document, less to summarize it.
+- [ ] Move image previews to the hextree too, of course.
+- [ ] Auto-crop for image preprocessing.
 
 ## Todo:
 - Trie search
