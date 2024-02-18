@@ -14,6 +14,7 @@ Store documents by taking a photo, and find them later with simple text search.
 - Image preview.
 
 ## Installation:
+**Note: the t5 uses mlx for apple silicon and hasn't been tested elsewhere.**
 1. From the `modules` directory, run `python convert.py --model t5-3b` to download the model [~11gb+].
 2. From the `docs` directory, run `python -m venv venv`, `source venv/bin/activate`, `pip install -r requirements.txt`, `streamlit run app.py`.
 
@@ -36,6 +37,7 @@ Because I'm disorganized and all the apps I tried suck.
 - [ ] Fine-tune the T5 to name the document, less to summarize it.
 - [ ] Move image previews to the hextree too, of course.
 - [ ] Auto-crop for image preprocessing.
+- [ ] Port to standard pytorch for use on other hardware.
 
 ## Todo:
 - Trie search
