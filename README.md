@@ -3,7 +3,6 @@ Storage for important documents that can be digitized.
 - OCR by tesseract.
 - Summary with a t5-3b, using mlx for apple silicon.
 - Front-end with streamlit.
-- 3-level hexidecimal system data directory.
 
 ## What does it do?
 Store documents by taking a photo, and find them later with simple text search.
@@ -19,7 +18,7 @@ Store documents by taking a photo, and find them later with simple text search.
 2. From the `docs` directory, run `python -m venv venv`, `source venv/bin/activate`, `pip install -r requirements.txt`, `streamlit run app.py`.
 
 ## Known Bugs:
-- Images must be manually cropped or the OCR gets confused.
+- Images need to be manually pre-processed, other than grayscaling, or the OCR gets confused.
 - The t5 is a standard t5-3b from hugging face's transformers library: https://huggingface.co/docs/transformers/en/index, and isn't tuned.
 
 ## Why do this?
@@ -27,7 +26,7 @@ Because I'm disorganized and all the apps I tried suck.
 
 ## Road map to MVP
 - [x] GUI with streamlit.
-- [x] Hex tree directory generation and mapping.
+- [x] Hex tree directory generation and mapping to cloud.
 - [x] Out-of-the-box OCR with tesseract.
 - [x] Out-of-the-box t5 transformer integration.
 - [x] Optimize for t5 inference on Apple silicon so I can host this on my laptop so maybe Ann will use it.
