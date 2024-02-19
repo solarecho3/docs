@@ -31,6 +31,7 @@ Because I'm disorganized and all the apps I tried suck.
 - [x] Out-of-the-box t5 transformer integration.
 - [x] Optimize for t5 inference on Apple silicon so I can host this on my laptop so maybe Ann will use it.
 - [ ] Installation script.
+- [ ] CI/CD pipeline cleaning.
 - [ ] Trie mapping every OCR'd token to any document containing it.
 - [ ] Text search and document retrieval via trie mapping.
 - [ ] T5 hyperparameteres to config.
