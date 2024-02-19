@@ -12,7 +12,7 @@ Store documents by taking a photo, and find them later with simple text search.
 - Tags search.
 - Image preview.
 
-## Design and Methodology
+## Design and Methodology:
 I wanted to just go for the most manual, intuitive way to store, index, and query docs without doing a bunch of research and engineering. Just save to the file system, tag and map with JSON, and deliver an MVP.
 
 ## Installation:
