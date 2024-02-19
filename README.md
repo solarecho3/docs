@@ -1,7 +1,7 @@
 # Declutter Docs App
 Storage for important documents that can be digitized.
 - OCR by tesseract.
-- Summary with a t5-3b, using mlx for apple silicon.
+- Summary with a t5-3b, using [MLX](https://github.com/ml-explore/mlx) for apple silicon.
 - Front-end with streamlit.
 
 ## What does it do?
