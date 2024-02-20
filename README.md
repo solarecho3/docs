@@ -12,6 +12,9 @@ Store documents by taking a photo, and find them later with simple text search.
 - Tags search.
 - Image preview.
 
+## Design and Methodology:
+I wanted to just go for the most manual, intuitive way to store, index, and query docs without doing a bunch of research and engineering. Just save to the file system, tag and map with JSON, and deliver an MVP.
+
 ## Installation:
 **Note: the t5 uses mlx for apple silicon and hasn't been tested elsewhere.**
 1. From the `modules` directory, run `python convert.py --model t5-3b` to download the model [~11gb+].
