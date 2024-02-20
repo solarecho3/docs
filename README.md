@@ -1,7 +1,7 @@
 # Declutter Docs App
 Storage for important documents that can be digitized.
 - OCR by [pytesseract](https://pypi.org/project/pytesseract/).
-- Summary with a t5-3b from [🤗 transformers](https://pypi.org/project/transformers/), using [MLX](https://github.com/ml-explore/mlx) for apple silicon.
+- Summary with a [Google T5-3b](https://huggingface.co/google-t5/t5-3b) from [🤗 transformers](https://pypi.org/project/transformers/), using [MLX](https://github.com/ml-explore/mlx) for apple silicon.
 - Front-end with [streamlit](https://pypi.org/project/streamlit/).
 
 ## What does it do?
