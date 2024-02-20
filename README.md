@@ -22,7 +22,7 @@ I wanted to just go for the most manual, intuitive way to store, index, and quer
 
 ## Known Bugs:
 - Images need to be cropped or the OCR gets confused.
-- The t5 is a standard t5-3b from hugging face's transformers library: https://huggingface.co/docs/transformers/en/index, and isn't tuned.
+- The t5 is a standard google t5-3b from hugging face's transformers library: [https://huggingface.co/docs/transformers/en/index](https://huggingface.co/google-t5/t5-3b), and isn't tuned.
 
 ## Why do this?
 Because I'm disorganized and all the apps I tried suck.
