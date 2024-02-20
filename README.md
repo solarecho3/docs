@@ -21,7 +21,7 @@ I wanted to just go for the most manual, intuitive way to store, index, and quer
 2. From the `docs` directory, run `python -m venv venv`, `source venv/bin/activate`, `pip install -r requirements.txt`, `streamlit run app.py`.
 
 ## Known Bugs:
-- Images need to be manually pre-processed, other than grayscaling, or the OCR gets confused.
+- Images need to be cropped or the OCR gets confused.
 - The t5 is a standard t5-3b from hugging face's transformers library: https://huggingface.co/docs/transformers/en/index, and isn't tuned.
 
 ## Why do this?
