@@ -7,8 +7,8 @@ Storage for important documents that can be digitized.
 ## What does it do?
 Store documents by taking a photo, and find them later with simple text search.
 
-- Optical Character Recognition: [tesseract] Take a photo of a document and the text is scanned, read, and attached as metadata. Can't find your 2022 1098-T tax form? Just search for "1098-T" and see all the documents containing that string.
-- Language Model Summarization: [t5] A generative-AI summary of the document using a t5 transformer.
+- Optical Character Recognition: [pytesseract](https://pypi.org/project/pytesseract/) Take a photo of a document and the text is scanned, read, and attached as metadata. Can't find your 2022 1098-T tax form? Just search for "1098-T" and see all the documents containing that string.
+- Language Model Summarization: [🤗 transformers](https://pypi.org/project/transformers/) A generative-AI summary of the document using a t5 transformer.
 - Tags search.
 - Image preview.
 
