@@ -22,34 +22,28 @@ I wanted to just go for the most manual, intuitive way to store, index, and quer
 
 ## Known Bugs:
 - Images need to be cropped or the OCR gets confused.
-- The t5 is a standard t5-3b from hugging face's transformers library: https://huggingface.co/docs/transformers/en/index, and isn't tuned.
+- The t5 is a standard google t5-3b from hugging face's transformers library: [https://huggingface.co/docs/transformers/en/index](https://huggingface.co/google-t5/t5-3b), and isn't tuned.
 
 ## Why do this?
 Because I'm disorganized and all the apps I tried suck.
 
 ## Road map to MVP
 - [x] GUI with streamlit.
-- [x] Hex tree directory generation and mapping to cloud.
+- [x] Hex tree directory generation and mapping to file system.
 - [x] Out-of-the-box OCR with tesseract.
 - [x] Out-of-the-box t5 transformer integration.
 - [x] Optimize for t5 inference on Apple silicon so I can host this on my laptop so maybe Ann will use it.
-- [ ] Installation script.
+- [ ] Installation script in shell.
 - [ ] CI/CD pipeline cleaning.
 - [ ] Trie mapping every OCR'd token to any document containing it.
 - [ ] Text search and document retrieval via trie mapping.
 - [ ] T5 hyperparameteres to config.
-- [ ] Fine-tune the T5 to name the document, less to summarize it.
+- [ ] Fine-tune the T5 to name the document, less to summarize it?
 - [ ] Move image previews to the hextree too, of course.
 - [ ] Auto-crop for image preprocessing.
-- [ ] Port to standard pytorch for use on other hardware.
+- [ ] Port to standard pytorch for use on other hardware; do an OS check.
 - [ ] Either truncate inputs or find a model with a longer sequence length. Or, chunk and sum sections of 512 len, and summarize the resulting strings as one.
-
-## Todo:
-- Trie search
-- Fine-tune t5 model or inference algorithm.
-  - Why does terminal results differ from module?
-- Add crop to image pre-processing.
-- Image previews to hextree.
-- Styling and formatting.
-- Lazy subdirectory creation.
-- Expose T5 configs to front-end.
+- [ ] Styling and formatting.
+- [ ] Lazy subdirectory creation.
+- [ ] Expose T5 configs to front-end.
+- [ ] File system scraper to cloud backup.
