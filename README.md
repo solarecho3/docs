@@ -1,8 +1,8 @@
 # Declutter Docs App
 Storage for important documents that can be digitized.
-- OCR by tesseract.
-- Summary with a t5-3b, using [MLX](https://github.com/ml-explore/mlx) for apple silicon.
-- Front-end with streamlit.
+- OCR by [pytesseract](https://pypi.org/project/pytesseract/).
+- Summary with a t5-3b from [🤗 transformers](https://pypi.org/project/transformers/), using [MLX](https://github.com/ml-explore/mlx) for apple silicon.
+- Front-end with [streamlit](https://pypi.org/project/streamlit/).
 
 ## What does it do?
 Store documents by taking a photo, and find them later with simple text search.
