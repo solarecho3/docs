@@ -10,6 +10,7 @@ from typing import Any
 from datetime import datetime
 
 import cv2
+import pytesseract
 import pandas as pd
 import streamlit as st
 
@@ -35,19 +36,6 @@ data_path_root = "data"
         with open("config.toml", "r") as f:
             data = tomllib.loads(f.read())
     return data
-
-
-def generate_thumbnail(root, thumb_root: str, data: bytes) -> str:
-    """Generate thumbnails.
-
-    :returns: thumbnail uuid + \".jpg\""""
-    os.makedirs(os.path.join(root, thumb_root), exist_ok=True)
-    size = (128, 128)
-    thumb_uuid = str(uuid.uuid4())
-    with Image.open(io.BytesIO(data)) as f:
-        f.thumbnail(size)
-        f.save(os.path.join(root, thumb_root, thumb_uuid + ".jpg"), "JPEG")
-    return str(os.path.join(root, thumb_root, thumb_uuid)) + ".jpg"
 
 
 def show_thumbnails(root):
@@ -111,7 +99,62 @@ def map_hextree(root: str, map_path: str):
         pass
 
 
-def jpg_to_hextree(root: str, data: bytes, metadata: dict):
+def preprocess_img_and_save(file_path):
+    # grayscale the image
+    # TODO: just do this operation on the bytes
+    img = cv2.imread(str(file_path))
+    # convert to grayscale
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # apply adaptive threshold on gray img
+    threshold = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 21, 15)
+
+    # apply white where threshold is white to a copy
+    result = img.copy()
+    result[threshold == 255] = (255, 255, 255)
+
+    # save the copy
+    cv2.imwrite(str(file_path), threshold)
+
+
+def generate_thumbnail_bytes(root, thumb_root: str, data: bytes) -> str:
+    """Generate thumbnails.
+
+    :returns: thumbnail uuid + \".jpg\""""
+    os.makedirs(os.path.join(root, thumb_root), exist_ok=True)
+
+    size = (128, 128)
+    thumb_uuid = str(uuid.uuid4())
+
+    with Image.open(io.BytesIO(data)) as f:
+        f.thumbnail(size)
+        f.save(os.path.join(root, thumb_root, thumb_uuid + ".jpg"), "JPEG")
+
+    # returns the path to the thumbnail as str
+    return str(os.path.join(root, thumb_root, thumb_uuid)) + ".jpg"
+
+
+def generate_thumbnail_from_file(root, thumb_root: str, file_path: pathlib.Path) -> str:
+    """Generate thumbnails.
+
+    Arguments
+    ---------
+    file_path : pathlib.Path - The path-like object to the file, for thumb-nailing.
+
+    :returns: thumbnail uuid + \".jpg\""""
+    os.makedirs(os.path.join(root, thumb_root), exist_ok=True)
+    size = (128, 128)
+    thumb_uuid = str(uuid.uuid4())
+
+    with Image.open(file_path) as f:
+        f.thumbnail(size)
+        f.save(os.path.join(root, thumb_root, thumb_uuid + ".jpg"), "JPEG")
+
+    # returns the path to the thumbnail as str
+    return str(os.path.join(root, thumb_root, thumb_uuid)) + ".jpg"
+
+
+def scan_image(root: str, data: bytes, metadata: dict):
     """Save an image to hex tree directory."""
     new_uid = uuid.uuid4()
     _file = str(new_uid) + ".jpg"
@@ -124,30 +167,26 @@ def jpg_to_hextree(root: str, data: bytes, metadata: dict):
     metadata["full_path"] = str(file_path)
     metadata["upload_time"] = datetime.isoformat(datetime.utcnow())
     metadata["upload_time_zone"] = "utc"
-    metadata["thumbnail"] = generate_thumbnail(root, 'previews', data)
 
     with open(file_path, "wb") as img:
         img.write(data)
 
-    # grayscale the image
-    # TODO: just do this operation on the bytes
-    img = cv2.imread(str(file_path))
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    cv2.imwrite(str(file_path), img)
+    # scan, preprocess, map, thumbnail, and save the img
+    preprocess_img_and_save(file_path)
+    metadata["thumbnail"] = generate_thumbnail_from_file(root, 'previews', file_path)
 
     # generate OCR with tesseract
-    import pytesseract
     ocr_str = pytesseract.image_to_string(Image.open(str(file_path)))
     metadata["ocr_string"] = ocr_str
 
-    # some text cleaning
-    from nltk.corpus import stopwords
-
-    def remove_stopwords(tokens):
-        stop_words = set(stopwords.words('english'))
-        filtered_tokens = [word for word in tokens if word not in stop_words]
-        return filtered_tokens
-    # TODO: test removing stop words
+    # # some text cleaning
+    # from nltk.corpus import stopwords
+    #
+    # def remove_stopwords(tokens):
+    #     stop_words = set(stopwords.words('english'))
+    #     filtered_tokens = [word for word in tokens if word not in stop_words]
+    #     return filtered_tokens
+    # # TODO: test removing stop words
 
     # t5 inference here
     import modules.t5 as t5
@@ -185,9 +224,9 @@ if not os.path.exists(DATA_PATH_ROOT):
 
 st.header('Docs uploader')
 st.subheader('Upload')
-upload_col1, upload_col2 = st.columns([5,2])
+upload_col1, upload_col2 = st.columns([5, 2])
 st_file_uploader = st.file_uploader('New image', type='jpg', accept_multiple_files=False)
-st_file_uploader_description = st.text_input('Tags', placeholder='\"2023 1099 tax form\"...')
+st_file_uploader_description = st.text_input('Manual tags', placeholder='\"2023 1099 tax form\"...')
 st_file_uploader_submit = st.button('Upload')
 st.divider()
 
@@ -199,7 +238,7 @@ if st_file_uploader_submit:
         original_filename=st_file_uploader.name,
         tags=st_file_uploader_description,
     )
-    jpg_to_hextree(DATA_PATH_ROOT, bytes_data, attach_metadata)
+    scan_image(DATA_PATH_ROOT, bytes_data, attach_metadata)
 
 ##### metadata and display #####
 try:
