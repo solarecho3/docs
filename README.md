@@ -7,7 +7,7 @@ Storage for important documents that can be digitized.
 ## What does it do?
 Store documents by taking a photo, and find them later with simple text search.
 
-- Optical Character Recognition: [tesseract] Take a photo of an important document that can be digitized, and the app will read the text and store it so the document can be found later with text search. Can't find your 2022 1098-T tax form? Just search for "1098-T" and see all the documents containing that string.
+- Optical Character Recognition: [tesseract] Take a photo of a document and the text is scanned, read, and attached as metadata. Can't find your 2022 1098-T tax form? Just search for "1098-T" and see all the documents containing that string.
 - Language Model Summarization: [t5] A generative-AI summary of the document using a t5 transformer.
 - Tags search.
 - Image preview.
@@ -42,6 +42,7 @@ Because I'm disorganized and all the apps I tried suck.
 - [ ] Move image previews to the hextree too, of course.
 - [ ] Auto-crop for image preprocessing.
 - [ ] Port to standard pytorch for use on other hardware.
+- [ ] Either truncate inputs or find a model with a longer sequence length. Or, chunk and sum sections of 512 len, and summarize the resulting strings as one.
 
 ## Todo:
 - Trie search
